@@ -14,12 +14,14 @@ let divWeather5DayEl = $('#weather-5-day');
 let updateSearchHistory = function(cityName) {
     if (cityName !== '') {
         console.log('storing ' + cityName);
-        store.push(cityName);
-        if (store.length > 10) {
-            // max search history at 10 items
-            store.shift();
-        }
-        localStorage.setItem('weather-search-history', JSON.stringify(store));
+        if (store.indexOf(cityName)===-1) {
+            store.push(cityName);
+            if (store.length > 10) {
+                // max search history at 10 items
+                store.shift();
+            }
+            localStorage.setItem('weather-search-history', JSON.stringify(store));
+        }   
     }
     divCitySearchHistoryEl.empty();
     for (let i = store.length-1; i >= 0; i--) {
@@ -61,6 +63,18 @@ let displayWeatherToday = function(json) {
     divWeatherTodayEl.append(cityNameEl).append(cityTempEl).append(cityWindEl).append(cityUvIndexEl);
 }
 
+let displayForecast = function(json) {
+    let d = new Date(json.dt * 1000).toLocaleDateString();
+    let colEl = $('<div>').addClass('col-12 col-lg-2');
+    let cardEl = $('<div>').addClass('card m-2');
+    let headerEl = $('<h5>').addClass('card-header').text(d);
+    let contentEl = $('<p>').text('Temp: ' + json.main.temp + 'F');
+    cardEl.append(headerEl).append(contentEl);
+    colEl.append(cardEl);
+    
+    divWeather5DayEl.append(colEl);
+}
+
 let getFiveDayForecast = async function(id) {
     let response = await fetch('https://api.openweathermap.org/data/2.5/forecast?id=' + id + '&units=imperial&appid=4828b496af91abffe8c14b98e9eb5a2c');
 
@@ -68,6 +82,11 @@ let getFiveDayForecast = async function(id) {
         // get the response body (the method explained below)
         let json = await response.json();
         console.log(json);
+        let days = json.list;
+        divWeather5DayEl.empty();
+        for (let i = 4; i < days.length; i+=8) {
+            displayForecast(days[i]);
+        }
     } else {
         alert("HTTP-Error: " + response.status);
     }
@@ -79,13 +98,8 @@ let getCityWeather = async function(cityName) {
     if (response.ok) { // if HTTP-status is 200-299
         // get the response body (the method explained below)
         let json = await response.json();
-        console.log(json);
         displayWeatherToday(json);
         getFiveDayForecast(json.id);
-        // update the search history with city
-        // display the city current weather
-        // extract the id for the city
-        // call the 5 day api using id
     } else {
         alert("HTTP-Error: " + response.status);
     }
