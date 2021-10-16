@@ -1,4 +1,4 @@
-
+// Search history in local storage
 
 let response = await fetch('https://api.openweathermap.org/data/2.5/forecast?id=2643743&appid=4828b496af91abffe8c14b98e9eb5a2c');
 

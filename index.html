@@ -12,15 +12,15 @@
     <title>Weather Dashboard</title>
 </head>
 <body>
-    <div class='container-fluid'>
+    <div class='container h-100 border'>
         <div class='jumbotron bg-dark'>
             <h1 class='text-light text-center py-2'>Weather Dashboard</h1>
         </div>
-        <div class="row border">
-            <div class="col-12 col-md-2 d-flex flex-column border">
+        <div class="row h-100 border">
+            <div class="col-12 col-md-2 d-flex flex-column h-100 border p-2">
                 <h2>Search for a City:</h2>
-                <input type="text" name="" id="">
-                <button type="submit">Search</button>
+                <input type="text" class="form-control" name="city-search" id="city-search" placeholder="City Name">
+                <button type="submit" class='btn btn-primary my-2' id='city-search-btn'>Search</button>
             </div>
             <div class="col-12 col-md-10 border">
                 <h2>Atlanta</h2>
