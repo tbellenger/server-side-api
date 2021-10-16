@@ -1,3 +1,11 @@
+.jumbotron {
+    background-image: linear-gradient(to right, blue, darkblue);
+}
+
+#weather-results {
+    display: none;
+}
+
 #search-history {
     border-top: 0.2rem solid rgb(189, 189, 189);
 }
