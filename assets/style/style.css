@@ -7,8 +7,10 @@
     padding-right: 1rem;
 }
 
-.card-img {
+.weather-img {
     max-width: 4rem;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 #weather-results {
@@ -37,4 +39,13 @@
 .extreme {
     background-color: purple;
     color: white;
+}
+
+#err-city-not-found {
+    display: none;
+    transition: display 1s;
+}
+
+#err-city-not-found.fadein {
+    display: inline-block;
 }

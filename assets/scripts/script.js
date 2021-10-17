@@ -10,6 +10,7 @@ let divCitySearchHistoryEl = $('#search-history');
 let divWeatherResultsEl = $('#weather-results');
 let divWeatherTodayEl = $('#weather-today');
 let divWeather5DayEl = $('#weather-5-day');
+let errCityNotFoundEl = $('#err-city-not-found');
 
 let updateSearchHistory = function(cityName) {
     if (cityName !== '') {
@@ -52,7 +53,7 @@ let displayWeatherToday = function(json) {
     let d = new Date(json.dt * 1000);
 
     let cityNameEl = $('<h2>').text(json.name + ' (' + d.toLocaleDateString() + ')');
-    cityNameEl.append($('<img>').addClass('card-img').attr('alt','weather icon').attr('src','http://openweathermap.org/img/wn/' + json.weather[0].icon + '@2x.png'));
+    cityNameEl.append($('<img>').addClass('weather-img').attr('alt','weather icon').attr('src','http://openweathermap.org/img/wn/' + json.weather[0].icon + '@2x.png'));
     let cityTempEl = $('<p>').text('Temp: ' + json.main.temp + 'F');
     let cityWindEl = $('<p>').text('Wind: ' + json.wind.speed + 'Mph');
     let cityHumidityEl = $('<p>').text('Humidity: ' + json.main.humidity + '%');
@@ -65,7 +66,7 @@ let displayForecast = function(json) {
     let colEl = $('<div>').addClass('col-12 col-md-6 col-xl-2');
     let cardEl = $('<div>').addClass('card m-1 bg-secondary text-light text-xl-center');
     cardEl.append($('<h5>').addClass('card-header bg-dark text-light').text(d));
-    cardEl.append($('<img>').addClass('card-img').attr('alt','weather icon').attr('src','http://openweathermap.org/img/wn/' + json.weather[0].icon + '@2x.png'));
+    cardEl.append($('<img>').addClass('weather-img px-auto').attr('alt','weather icon').attr('src','http://openweathermap.org/img/wn/' + json.weather[0].icon + '@2x.png'));
     cardEl.append($('<p>').text('Temp: ' + json.temp.day + 'F'));
     cardEl.append($('<p>').text('Wind: ' + json.wind_speed + 'Mph'));
     cardEl.append($('<p>').text('Humidity: ' + json.humidity + '%'));
@@ -92,6 +93,14 @@ let displayUvIndex = function(uvi) {
     divWeatherTodayEl.append(uvIndexMessage);
 }
 
+let showCityNotFoundError = function() {
+    console.log('toggle error message');
+    errCityNotFoundEl[0].classList.toggle('fadein');
+    setTimeout(function() {
+        errCityNotFoundEl[0].classList.toggle('fadein');
+    }, 3000);
+}
+
 let getUvIndexAndForecast = async function(lat, lon) {
     let response = await fetch('https://api.openweathermap.org/data/2.5/onecall?lat='+lat+'&lon='+lon+'&exclude=hourly,minutely&units=imperial&appid=4828b496af91abffe8c14b98e9eb5a2c')
     
@@ -106,7 +115,8 @@ let getUvIndexAndForecast = async function(lat, lon) {
 
         displayUvIndex(json.current.uvi);
     } else {
-        alert("HTTP-Error: " + response.status);
+        console.log("HTTP-Error: " + response.status);
+        showCityNotFoundError();
     }
 }
 
@@ -121,7 +131,8 @@ let getCityWeather = async function(cityName) {
         updateSearchHistory(cityName);
         divWeatherResultsEl.show();
     } else {
-        alert("HTTP-Error: " + response.status);
+        console.log("HTTP-Error: " + response.status);
+        showCityNotFoundError();
     }
 }
 
