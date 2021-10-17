@@ -57,8 +57,8 @@ let displayWeatherToday = function(json) {
 
     let cityNameEl = $('<h2>').text(json.name + ' (' + d.toLocaleDateString() + ')');
     cityNameEl.append($('<img>').addClass('weather-img').attr('alt','weather icon').attr('src','http://openweathermap.org/img/wn/' + json.weather[0].icon + '@2x.png'));
-    let cityTempEl = $('<p>').text('Temp: ' + json.main.temp + 'F');
-    let cityWindEl = $('<p>').text('Wind: ' + json.wind.speed + 'Mph');
+    let cityTempEl = $('<p>').text('Temp: ' + json.main.temp + ' F');
+    let cityWindEl = $('<p>').text('Wind: ' + json.wind.speed + ' Mph');
     let cityHumidityEl = $('<p>').text('Humidity: ' + json.main.humidity + '%');
     divWeatherTodayEl.empty();
     divWeatherTodayEl.append(cityNameEl).append(cityTempEl).append(cityWindEl).append(cityHumidityEl);
@@ -70,8 +70,8 @@ let displayForecast = function(json) {
     let cardEl = $('<div>').addClass('card m-1 bg-secondary text-light text-xl-center');
     cardEl.append($('<h5>').addClass('card-header bg-dark text-light').text(d));
     cardEl.append($('<img>').addClass('weather-img px-auto').attr('alt','weather icon').attr('src','http://openweathermap.org/img/wn/' + json.weather[0].icon + '@2x.png'));
-    cardEl.append($('<p>').text('Temp: ' + json.temp.day + 'F'));
-    cardEl.append($('<p>').text('Wind: ' + json.wind_speed + 'Mph'));
+    cardEl.append($('<p>').text('Temp: ' + json.temp.day + ' F'));
+    cardEl.append($('<p>').text('Wind: ' + json.wind_speed + ' Mph'));
     cardEl.append($('<p>').text('Humidity: ' + json.humidity + '%'));
     colEl.append(cardEl);
     
