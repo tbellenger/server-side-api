@@ -57,16 +57,16 @@ let displayWeatherToday = function(json) {
     cityNameEl.append($('<img>').addClass('card-img').attr('alt','weather icon').attr('src','http://openweathermap.org/img/wn/' + json.weather[0].icon + '@2x.png'));
     let cityTempEl = $('<p>').text('Temp: ' + json.main.temp + 'F');
     let cityWindEl = $('<p>').text('Wind: ' + json.wind.speed + 'Mph');
-    let cityUvIndexEl = $('<p>').text('Humidity: ' + json.main.humidity + '%');
+    let cityHumidityEl = $('<p>').text('Humidity: ' + json.main.humidity + '%');
     divWeatherTodayEl.empty();
-    divWeatherTodayEl.append(cityNameEl).append(cityTempEl).append(cityWindEl).append(cityUvIndexEl);
+    divWeatherTodayEl.append(cityNameEl).append(cityTempEl).append(cityWindEl).append(cityHumidityEl);
 }
 
 let displayForecast = function(json) {
     let d = new Date(json.dt * 1000).toLocaleDateString();
-    let colEl = $('<div>').addClass('col-12 col-xl-2');
-    let cardEl = $('<div>').addClass('card my-1');
-    cardEl.append($('<h5>').addClass('card-header').text(d));
+    let colEl = $('<div>').addClass('col-12 col-md-6 col-xl-2');
+    let cardEl = $('<div>').addClass('card m-1 bg-secondary text-light text-xl-center');
+    cardEl.append($('<h5>').addClass('card-header bg-dark text-light').text(d));
     cardEl.append($('<img>').addClass('card-img').attr('alt','weather icon').attr('src','http://openweathermap.org/img/wn/' + json.weather[0].icon + '@2x.png'));
     cardEl.append($('<p>').text('Temp: ' + json.main.temp + 'F'));
     cardEl.append($('<p>').text('Wind: ' + json.wind.speed + 'Mph'));
@@ -76,6 +76,31 @@ let displayForecast = function(json) {
     colEl.append(cardEl);
     
     divWeather5DayEl.append(colEl);
+}
+
+let getUvIndex = async function(lat, lon) {
+    console.log(lat, lon);
+    let response = await fetch('https://api.openweathermap.org/data/2.5/onecall?lat='+lat+'&lon='+lon+'&exclude=hourly,minutely&appid=4828b496af91abffe8c14b98e9eb5a2c')
+    
+    if (response.ok) { // if HTTP-status is 200-299
+        // get the response body (the method explained below)
+        let json = await response.json();
+        console.log(json);
+        let uvi = json.current.uvi;
+        let css = '';
+        if (uvi < 2.5) {
+            css = 'low'
+        } else if (uvi < 5.5) {
+            css = 'med'
+        } else if (uvi < 7.5) {
+            css = 'high'
+        }
+        let uvIndex = $('<span>').addClass('badge ' + css).text(json.current.uvi);
+        let uvIndexMessage = $('<p>').text('UVI: ').append(uvIndex);
+        divWeatherTodayEl.append(uvIndexMessage);
+    } else {
+        alert("HTTP-Error: " + response.status);
+    }
 }
 
 let getFiveDayForecast = async function(id) {
@@ -89,6 +114,8 @@ let getFiveDayForecast = async function(id) {
         for (let i = 7; i < days.length; i+=8) {
             displayForecast(days[i]);
         }
+        console.log(json);
+        getUvIndex(json.city.coord.lat, json.city.coord.lon);
     } else {
         alert("HTTP-Error: " + response.status);
     }
