@@ -28,24 +28,27 @@ let updateSearchHistory = function(cityName) {
         let btn = $('<button>').addClass('btn btn-secondary my-1').data('city',store[i]).text(store[i]);
         divCitySearchHistoryEl.append(btn);
     }
-}
+};
 
 // attach events
-let btnCitySearchClick = function() {
+let btnCitySearchClick = function(ev) {
+    if (typeof ev !== 'undefined') {
+        ev.preventDefault();
+    }
     let cityName = inpCitySearchEl.val().trim();
     inpCitySearchEl.val('');
     console.log('Search on city: ' + cityName);
     if (cityName !== '') {
         getCityWeather(cityName);
     }
-}
+};
 
 let btnCitySearchHistoryClick = function() {
     inpCitySearchEl.val($(this).data('city'));
     btnCitySearchClick();
-}
+};
 
-inpCitySearchEl.keypress(function(e) { if (e.which == 13) { btnCitySearchClick(); }});
+inpCitySearchEl.keypress(function(e) { if (e.which == 13) { btnCitySearchClick(e); }});
 btnCitySearchEl.on('click', btnCitySearchClick);
 divCitySearchHistoryEl.on('click', '.btn', btnCitySearchHistoryClick);
 
@@ -59,7 +62,7 @@ let displayWeatherToday = function(json) {
     let cityHumidityEl = $('<p>').text('Humidity: ' + json.main.humidity + '%');
     divWeatherTodayEl.empty();
     divWeatherTodayEl.append(cityNameEl).append(cityTempEl).append(cityWindEl).append(cityHumidityEl);
-}
+};
 
 let displayForecast = function(json) {
     let d = new Date(json.dt * 1000).toLocaleDateString();
@@ -70,12 +73,10 @@ let displayForecast = function(json) {
     cardEl.append($('<p>').text('Temp: ' + json.temp.day + 'F'));
     cardEl.append($('<p>').text('Wind: ' + json.wind_speed + 'Mph'));
     cardEl.append($('<p>').text('Humidity: ' + json.humidity + '%'));
-    
-    //cardEl.append(headerEl).append(contentEl);
     colEl.append(cardEl);
     
     divWeather5DayEl.append(colEl);
-}
+};
 
 let displayUvIndex = function(uvi) {
     let css = '';
@@ -91,21 +92,21 @@ let displayUvIndex = function(uvi) {
     let uvIndex = $('<span>').addClass('badge ' + css).text(uvi);
     let uvIndexMessage = $('<p>').text('UVI: ').append(uvIndex);
     divWeatherTodayEl.append(uvIndexMessage);
-}
+};
 
 let showCityNotFoundError = function() {
-    console.log('toggle error message');
-    errCityNotFoundEl[0].classList.toggle('fadein');
+    inpCitySearchEl.addClass('is-invalid');
     setTimeout(function() {
-        errCityNotFoundEl[0].classList.toggle('fadein');
+        inpCitySearchEl.removeClass('is-invalid');
     }, 3000);
-}
+};
 
 let getUvIndexAndForecast = async function(lat, lon) {
     let response = await fetch('https://api.openweathermap.org/data/2.5/onecall?lat='+lat+'&lon='+lon+'&exclude=hourly,minutely&units=imperial&appid=4828b496af91abffe8c14b98e9eb5a2c')
     
     if (response.ok) { // if HTTP-status is 200-299
         // get the response body (the method explained below)
+        console.log('response ok on second call');
         let json = await response.json();
 
         divWeather5DayEl.empty();
@@ -118,13 +119,14 @@ let getUvIndexAndForecast = async function(lat, lon) {
         console.log("HTTP-Error: " + response.status);
         showCityNotFoundError();
     }
-}
+};
 
 let getCityWeather = async function(cityName) {
     let response = await fetch('https://api.openweathermap.org/data/2.5/weather?q=' + cityName + '&units=imperial&appid=4828b496af91abffe8c14b98e9eb5a2c');
 
     if (response.ok) { // if HTTP-status is 200-299
         // get the response body (the method explained below)
+        console.log('response ok');
         let json = await response.json();
         displayWeatherToday(json);
         getUvIndexAndForecast(json.coord.lat, json.coord.lon);
@@ -134,6 +136,6 @@ let getCityWeather = async function(cityName) {
         console.log("HTTP-Error: " + response.status);
         showCityNotFoundError();
     }
-}
+};
 
 updateSearchHistory('');
