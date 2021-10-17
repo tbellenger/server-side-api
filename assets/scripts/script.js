@@ -13,7 +13,6 @@ let divWeather5DayEl = $('#weather-5-day');
 
 let updateSearchHistory = function(cityName) {
     if (cityName !== '') {
-        console.log('storing ' + cityName);
         if (store.indexOf(cityName)===-1) {
             store.push(cityName);
             if (store.length > 10) {
@@ -55,10 +54,10 @@ let displayWeatherToday = function(json) {
     let d = new Date(json.dt * 1000);
 
     let cityNameEl = $('<h2>').text(json.name + ' (' + d.toLocaleDateString() + ')');
-    cityNameEl.append($('<img>').attr('src','http://openweathermap.org/img/wn/' + json.weather[0].icon + '.png'));
+    cityNameEl.append($('<img>').addClass('card-img').attr('alt','weather icon').attr('src','http://openweathermap.org/img/wn/' + json.weather[0].icon + '@2x.png'));
     let cityTempEl = $('<p>').text('Temp: ' + json.main.temp + 'F');
     let cityWindEl = $('<p>').text('Wind: ' + json.wind.speed + 'Mph');
-    let cityUvIndexEl = $('<p>').text('Humidity: ' + json.main.humidity);
+    let cityUvIndexEl = $('<p>').text('Humidity: ' + json.main.humidity + '%');
     divWeatherTodayEl.empty();
     divWeatherTodayEl.append(cityNameEl).append(cityTempEl).append(cityWindEl).append(cityUvIndexEl);
 }
@@ -66,10 +65,14 @@ let displayWeatherToday = function(json) {
 let displayForecast = function(json) {
     let d = new Date(json.dt * 1000).toLocaleDateString();
     let colEl = $('<div>').addClass('col-12 col-lg-2');
-    let cardEl = $('<div>').addClass('card m-2');
-    let headerEl = $('<h5>').addClass('card-header').text(d);
-    let contentEl = $('<p>').text('Temp: ' + json.main.temp + 'F');
-    cardEl.append(headerEl).append(contentEl);
+    let cardEl = $('<div>').addClass('card my-1');
+    cardEl.append($('<h5>').addClass('card-header').text(d));
+    cardEl.append($('<img>').addClass('card-img').attr('alt','weather icon').attr('src','http://openweathermap.org/img/wn/' + json.weather[0].icon + '@2x.png'));
+    cardEl.append($('<p>').text('Temp: ' + json.main.temp + 'F'));
+    cardEl.append($('<p>').text('Wind: ' + json.wind.speed + 'Mph'));
+    cardEl.append($('<p>').text('Humidity: ' + json.main.humidity + '%'));
+    
+    //cardEl.append(headerEl).append(contentEl);
     colEl.append(cardEl);
     
     divWeather5DayEl.append(colEl);
@@ -81,10 +84,9 @@ let getFiveDayForecast = async function(id) {
     if (response.ok) { // if HTTP-status is 200-299
         // get the response body (the method explained below)
         let json = await response.json();
-        console.log(json);
         let days = json.list;
         divWeather5DayEl.empty();
-        for (let i = 4; i < days.length; i+=8) {
+        for (let i = 7; i < days.length; i+=8) {
             displayForecast(days[i]);
         }
     } else {

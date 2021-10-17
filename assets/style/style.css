@@ -1,5 +1,14 @@
 .jumbotron {
-    background-image: linear-gradient(to right, blue, darkblue);
+    background-image: linear-gradient(to right, rgb(65, 104, 150), darkblue);
+}
+
+.card p {
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+.card-img {
+    max-width: 4rem;
 }
 
 #weather-results {
