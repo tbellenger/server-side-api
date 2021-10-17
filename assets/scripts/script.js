@@ -89,11 +89,13 @@ let getUvIndex = async function(lat, lon) {
         let uvi = json.current.uvi;
         let css = '';
         if (uvi < 2.5) {
-            css = 'low'
+            css = 'low';
         } else if (uvi < 5.5) {
-            css = 'med'
+            css = 'med';
         } else if (uvi < 7.5) {
-            css = 'high'
+            css = 'high';
+        } else if (uvi < 10) {
+            css = 'extreme';
         }
         let uvIndex = $('<span>').addClass('badge ' + css).text(json.current.uvi);
         let uvIndexMessage = $('<p>').text('UVI: ').append(uvIndex);
