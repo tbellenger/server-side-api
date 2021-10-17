@@ -64,7 +64,7 @@ let displayWeatherToday = function(json) {
 
 let displayForecast = function(json) {
     let d = new Date(json.dt * 1000).toLocaleDateString();
-    let colEl = $('<div>').addClass('col-12 col-lg-2');
+    let colEl = $('<div>').addClass('col-12 col-xl-2');
     let cardEl = $('<div>').addClass('card my-1');
     cardEl.append($('<h5>').addClass('card-header').text(d));
     cardEl.append($('<img>').addClass('card-img').attr('alt','weather icon').attr('src','http://openweathermap.org/img/wn/' + json.weather[0].icon + '@2x.png'));
