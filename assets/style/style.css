@@ -7,6 +7,7 @@
     padding-right: 1rem;
 }
 
+/* center the weather images */
 .weather-img {
     max-width: 4rem;
     margin-left: auto;
@@ -17,10 +18,12 @@
     display: none;
 }
 
+/* add a separator bar for search history */
 #search-history {
     border-top: 0.2rem solid rgb(189, 189, 189);
 }
 
+/* styling for the UVI indicator */
 .low {
     background-color: green;
     color: white;
