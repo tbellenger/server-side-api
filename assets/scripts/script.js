@@ -68,9 +68,9 @@ let displayForecast = function(json) {
     let cardEl = $('<div>').addClass('card m-1 bg-secondary text-light text-xl-center');
     cardEl.append($('<h5>').addClass('card-header bg-dark text-light').text(d));
     cardEl.append($('<img>').addClass('card-img').attr('alt','weather icon').attr('src','http://openweathermap.org/img/wn/' + json.weather[0].icon + '@2x.png'));
-    cardEl.append($('<p>').text('Temp: ' + json.main.temp + 'F'));
-    cardEl.append($('<p>').text('Wind: ' + json.wind.speed + 'Mph'));
-    cardEl.append($('<p>').text('Humidity: ' + json.main.humidity + '%'));
+    cardEl.append($('<p>').text('Temp: ' + json.temp.day + 'F'));
+    cardEl.append($('<p>').text('Wind: ' + json.wind_speed + 'Mph'));
+    cardEl.append($('<p>').text('Humidity: ' + json.humidity + '%'));
     
     //cardEl.append(headerEl).append(contentEl);
     colEl.append(cardEl);
@@ -78,14 +78,20 @@ let displayForecast = function(json) {
     divWeather5DayEl.append(colEl);
 }
 
-let getUvIndex = async function(lat, lon) {
+let getUvIndexAndForecast = async function(lat, lon) {
     console.log(lat, lon);
-    let response = await fetch('https://api.openweathermap.org/data/2.5/onecall?lat='+lat+'&lon='+lon+'&exclude=hourly,minutely&appid=4828b496af91abffe8c14b98e9eb5a2c')
+    let response = await fetch('https://api.openweathermap.org/data/2.5/onecall?lat='+lat+'&lon='+lon+'&exclude=hourly,minutely&units=imperial&appid=4828b496af91abffe8c14b98e9eb5a2c')
     
     if (response.ok) { // if HTTP-status is 200-299
         // get the response body (the method explained below)
         let json = await response.json();
         console.log(json);
+
+        divWeather5DayEl.empty();
+        for (let i = 1; i < 6; i++) {
+            displayForecast(json.daily[i]);
+        }
+
         let uvi = json.current.uvi;
         let css = '';
         if (uvi < 2.5) {
@@ -105,24 +111,6 @@ let getUvIndex = async function(lat, lon) {
     }
 }
 
-let getFiveDayForecast = async function(id) {
-    let response = await fetch('https://api.openweathermap.org/data/2.5/forecast?id=' + id + '&units=imperial&appid=4828b496af91abffe8c14b98e9eb5a2c');
-
-    if (response.ok) { // if HTTP-status is 200-299
-        // get the response body (the method explained below)
-        let json = await response.json();
-        let days = json.list;
-        divWeather5DayEl.empty();
-        for (let i = 7; i < days.length; i+=8) {
-            displayForecast(days[i]);
-        }
-        console.log(json);
-        getUvIndex(json.city.coord.lat, json.city.coord.lon);
-    } else {
-        alert("HTTP-Error: " + response.status);
-    }
-}
-
 let getCityWeather = async function(cityName) {
     let response = await fetch('https://api.openweathermap.org/data/2.5/weather?q=' + cityName + '&units=imperial&appid=4828b496af91abffe8c14b98e9eb5a2c');
 
@@ -130,7 +118,8 @@ let getCityWeather = async function(cityName) {
         // get the response body (the method explained below)
         let json = await response.json();
         displayWeatherToday(json);
-        getFiveDayForecast(json.id);
+        getUvIndexAndForecast(json.coord.lat, json.coord.lon);
+        //getFiveDayForecast(json.id);
     } else {
         alert("HTTP-Error: " + response.status);
     }
