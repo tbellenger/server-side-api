@@ -35,9 +35,7 @@ let btnCitySearchClick = function() {
     inpCitySearchEl.val('');
     console.log('Search on city: ' + cityName);
     if (cityName !== '') {
-        updateSearchHistory(cityName);
         getCityWeather(cityName);
-        divWeatherResultsEl.show();
     }
 }
 
@@ -78,34 +76,35 @@ let displayForecast = function(json) {
     divWeather5DayEl.append(colEl);
 }
 
+let displayUvIndex = function(uvi) {
+    let css = '';
+    if (uvi < 2.5) {
+        css = 'low';
+    } else if (uvi < 5.5) {
+        css = 'med';
+    } else if (uvi < 7.5) {
+        css = 'high';
+    } else if (uvi < 10) {
+        css = 'extreme';
+    }
+    let uvIndex = $('<span>').addClass('badge ' + css).text(uvi);
+    let uvIndexMessage = $('<p>').text('UVI: ').append(uvIndex);
+    divWeatherTodayEl.append(uvIndexMessage);
+}
+
 let getUvIndexAndForecast = async function(lat, lon) {
-    console.log(lat, lon);
     let response = await fetch('https://api.openweathermap.org/data/2.5/onecall?lat='+lat+'&lon='+lon+'&exclude=hourly,minutely&units=imperial&appid=4828b496af91abffe8c14b98e9eb5a2c')
     
     if (response.ok) { // if HTTP-status is 200-299
         // get the response body (the method explained below)
         let json = await response.json();
-        console.log(json);
 
         divWeather5DayEl.empty();
         for (let i = 1; i < 6; i++) {
             displayForecast(json.daily[i]);
         }
 
-        let uvi = json.current.uvi;
-        let css = '';
-        if (uvi < 2.5) {
-            css = 'low';
-        } else if (uvi < 5.5) {
-            css = 'med';
-        } else if (uvi < 7.5) {
-            css = 'high';
-        } else if (uvi < 10) {
-            css = 'extreme';
-        }
-        let uvIndex = $('<span>').addClass('badge ' + css).text(json.current.uvi);
-        let uvIndexMessage = $('<p>').text('UVI: ').append(uvIndex);
-        divWeatherTodayEl.append(uvIndexMessage);
+        displayUvIndex(json.current.uvi);
     } else {
         alert("HTTP-Error: " + response.status);
     }
@@ -119,7 +118,8 @@ let getCityWeather = async function(cityName) {
         let json = await response.json();
         displayWeatherToday(json);
         getUvIndexAndForecast(json.coord.lat, json.coord.lon);
-        //getFiveDayForecast(json.id);
+        updateSearchHistory(cityName);
+        divWeatherResultsEl.show();
     } else {
         alert("HTTP-Error: " + response.status);
     }
